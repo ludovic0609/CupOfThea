@@ -50,18 +50,6 @@ const EditTea = () => {
       };
     });
 
-    if(tea.reference!=""){
-        fetch('http://localhost:8080/tea/reference/'+tea.reference)
-        .then(
-            response => response.json())
-        .then(res => {
-            if(res.length>0){
-                setRefTeaExist(true);
-            }else{
-                setRefTeaExist(false);
-            }
-        });
-    }
 }
     
     const handleSubmit = (event) =>{
@@ -74,12 +62,36 @@ const EditTea = () => {
             return;
         }
 
+        if(tea.reference!=""){
+          fetch('http://localhost:8080/tea/reference/tea/'+tea.reference,
+          {method: "POST",
+                  headers: {
+                    'Content-type': 'application/json'
+                  },
+                  body: JSON.stringify({id})
+              })
+          .then(
+              response => response.json())
+          .then(res => {
+            console.log(res);
+              if(res.length>0){
+     
+                  setRefTeaExist(true);
+              }else{
+              
+                  setRefTeaExist(false);
+              }
+          });
+      }
+
         if(refTeaExist===true){
+          
             setMessageError("la référence du thé existe déjà.");
             setTeaModify(false);
             return;
         }
         if(refTeaExist===false){
+          
             fetch('http://localhost:8080/tea/update/'+id, {
                 method: "POST",
                 headers: {
@@ -89,8 +101,13 @@ const EditTea = () => {
               })
               .then((response) => response.json())
               .then((result) => {
+                
                 setTeaModify(true);
                 if(result) navigate("/admin/dashboard");
+                else{
+                  setMessageError("la référence du thé existe déjà.");
+                  setTeaModify(false);
+                  }
                 
               })
         }
@@ -123,7 +140,7 @@ const EditTea = () => {
             {listeCategory.map((cat, i) => <option value={cat._id} key={i}>{cat.name}</option>)}
         </select>
         </div>
-        
+
         <div className={"form-group"}>
                 <label htmlFor="error-message" style={{color:"red"}}>{messageError}</label>
         </div>

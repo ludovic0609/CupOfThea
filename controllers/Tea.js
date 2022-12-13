@@ -91,6 +91,23 @@ export function GetTeaByReference(req,res){
     res.json(tea);
   });
 }
+// recupere un tea par reférence sauf le tea à modifier
+export function GetTeaByReferenceAltTea(req,res){
+  const reference=req.params.id;
+  const id=req.body.id;
+
+
+  Thea.find({
+    $and: [
+      {reference:reference},
+      {_id: { $ne: id }}
+    ]
+  },(err, tea) => {
+      if(err) return console.error(err);
+    res.json(tea);
+  });
+}
+
 // recupere une catégorie
 export function GetCategory(req,res){
   const id=req.params.id;
@@ -164,15 +181,19 @@ export function AddTeaSubmit(req,res){
 export function UpdateTeaSubmit(req,res){
   const id=req.params.id;
   let tea_bdd=null;
+  
 
-  if(req.body.name==="" || req.body.referene==="" || req.body.description===""
+  if(req.body.name==="" || req.body.reference==="" || req.body.description===""
        || req.body.price==="" || req.body.category===""){
           return;
   }
-  Thea.find({reference:req.body.reference},(err, user) => {
+  Thea.find({$and: [
+    {reference:req.body.reference},
+    {_id: { $ne: id }}
+  ]},(err, user) => {
       if(err) return console.error(err);
       if(user.length>0){
-       return;   
+        res.send(false);
       }
       else{
 

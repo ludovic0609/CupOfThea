@@ -2,12 +2,15 @@ import { redirect } from "react-router-dom";
 import { useState } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
+import { useNavigate } from "react-router-dom";
 
 const CreateAccount = () => {
     const [user, setUser] = useState({civilite:"",nom: "", prenom :"",adresse:"",code_postal:"",commune:"", tel: "",email: "",password:"", password_2:""});
     const [userAdd,setUserAdd] = useState(false);
     const [userMailExist,setUserMailExist]=useState(false);
     const[messageError,setMessageError]=useState("");
+
+    const navigate = useNavigate();
 
     const handleChange = (event)  => {
         event.preventDefault();
@@ -69,8 +72,11 @@ const CreateAccount = () => {
               })
               .then((response) => response.json())
               .then((result) => {
-                setUserAdd(true);
-                return redirect("/login");
+                if(result){
+                    setUserAdd(true);
+                    navigate('/login');
+                }
+                
               })
         }
     };
